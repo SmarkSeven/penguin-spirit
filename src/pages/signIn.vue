@@ -6,6 +6,9 @@
           <el-form-item prop="phone">
             <el-input v-model="loginForm.phone" placeholder="请输入手机号"></el-input>
           </el-form-item>
+          <el-form-item prop="pass">
+            <el-input v-model="loginForm.pass" type="password" placeholder="请输入密码"></el-input>
+          </el-form-item>
           <el-form-item v-if="regMode" prop="code">
             <el-col :span="15">
               <el-input v-model="loginForm.pass" type="number" placeholder="请输入验证码"></el-input>
@@ -14,12 +17,12 @@
               <input  v-if="regMode" value="验证码" type="button" class="btn-code" @click="getCode('loginForm')">
             </el-col>
           </el-form-item>
-          <el-form-item prop="pass">
-            <el-input v-model="loginForm.pass" type="password" placeholder="请输入密码"></el-input>
+          <el-form-item >
+            <el-input v-model="loginForm.inviteCode" placeholder="邀请码(非必填)"></el-input>
           </el-form-item>
           <el-form-item>
             <div class="btn-box"> 
-              <input  v-if="!regMode" value="登录" type="button" class="btn-submit" @click="submitForm('loginForm')">
+              <input  v-if="!regMode" value="登录" type="button" class="btn-submit" @click="signIn('loginForm')">
               <input value="注册" type="button" class="lnk-register" :class="{'btn-register': regMode}" @click="register('loginForm')">
             </div>
           </el-form-item>
@@ -30,6 +33,7 @@
 </template>
 
 <script>
+import * as apiService from '../service/apiService'
 export default {
   data () {
     const pattern = /^((1[3,5,8][0-9])|(14[5,7])|(17[0,6,7,8])|(19[7]))\d{8}$/
@@ -52,7 +56,8 @@ export default {
       loginForm: {
         phone: '',
         pass: '',
-        code: ''
+        code: '',
+        inviteCode: ''
       },
       rules: {
         phone: [{validator: checkPhone, message: '请输正确的手机号', trigger: 'blur'}],
@@ -92,10 +97,14 @@ export default {
         }
       })
     },
-    submitForm (formName) {
+    async signIn (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-            // TODO login
+          apiService.signIn(this.phone, this.pass)
+          // responsePromise.then(response => {
+          //   console.log(response)
+          // })
+          // .catch(err => console.log('err happen: ', err))
         }
       })
     },

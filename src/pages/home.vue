@@ -2,7 +2,7 @@
   <el-row type="flex" justify="center">
     <el-col :xs="24" :sm="18" :md="10" :lg="10">
       <el-tabs type="border-card">
-      <el-tab-pane label="自助下单">
+      <el-tab-pane label="下单">
         <section class="panel">
         <h4 class="panel-title">自助下单</h4>
         <el-card>
@@ -26,7 +26,7 @@
         </el-card>
       </section>
       </el-tab-pane>
-      <el-tab-pane label="订单详情"></el-tab-pane>
+      <el-tab-pane label="订单"></el-tab-pane>
       <el-tab-pane label="积分"></el-tab-pane>
     </el-tabs>
     </el-col>
@@ -138,9 +138,9 @@ export default {
   font-size: 14px;
   font-weight: 700;
   border: none;
-  padding: 6px 12px;
+  padding: 8px 32px;
   border-color: #2e6da4;
-  border-radius: 18px;
+  border-radius: 5px;
   background-color: #337ab7;
 }
 </style>
