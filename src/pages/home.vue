@@ -6,21 +6,26 @@
         <section class="panel">
         <h4 class="panel-title">自助下单</h4>
         <el-card>
-          <el-form ref="carForm" :model="carForm" :rules="rules" label-width="68px">
-            <el-form-item label="选择分类">
-              <el-cascader :options="options" :show-all-levels="false" placeholder="请选择商品分类"></el-cascader>
+          <el-form ref="orderForm" :model="orderForm" :rules="rules" label-width="80px">
+            <el-form-item label="选择分类" prop="selectCategoryId">
+              <el-cascader :options="options" :disabled="options.length === 0" @change="changeCategory" placeholder="请选择商品分类"></el-cascader>
             </el-form-item>
-            <el-form-item label="选择商品">
-              <el-select v-model="selectvalue" placeholder="请选择商品">
-                <el-option label="区域一" value="shanghai"></el-option>
-                <el-option label="区域二" value="beijing"></el-option>
+            <el-form-item label="选择商品" prop="selectGood">
+              <el-select v-model="orderForm.selectGood" @change="changeGood" :disabled="goods.length === 0" value-key="id" placeholder="请选择商品">
+                <el-option  v-for="good in goods" :label="good.name | labelFilter" :value="good" :key="good.id"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item label="下单账号">
-              <el-input v-model="accountName" placeholder="请输入QQ号/物品ID"></el-input>
+            <el-form-item label="商品价格">
+              <el-input :value="price" disabled placeholder="商品价格"></el-input>
+            </el-form-item>
+            <el-form-item label="商品描述">
+              <el-input v-model="extra" disabled placeholder="商品描述"></el-input>
+            </el-form-item>
+            <el-form-item v-for="(domain, index) in orderForm.domains" :label="domain.name" :prop="domain.name" :key="index">
+              <el-input v-model="domain.value" :placeholder="domain.hint"></el-input>
             </el-form-item>
             </el-form-item>
-              <input type="button" value="立即购买" class="btn-submit">
+              <input type="button" value="立即购买" class="btn-submit" @click="submit('orderForm')">
             </el-form>
           </el-form>
         </el-card>
@@ -34,65 +39,89 @@
 </template>
 
 <script>
+import * as apiService from '../service/mockService'
 export default {
   data () {
     return {
-      accountName: '',
-      selectvalue: '',
-      carForm: {
+      orderForm: {
+        selectCategoryId: 0,
+        selectGood: undefined,
+        domains: []
       },
       rules: {
+        selectCategoryId: [{ type: 'array', required: true, message: '请选择商品分类' }],
+        selectGood: [{ type: 'object', required: true, message: '请选择要购买的商品' }]
       },
-      options: []
+      options: [],
+      goods: []
     }
   },
-  created () {
-    this.options.push(...[{
-      value: 'zhinan',
-      label: '官方业务',
-      children: [{
-        value: 'shejiyuanze',
-        label: '设计原则'
-      }, {
-        value: 'daohang',
-        label: '导航'
-      }]
-    }, {
-      value: 'zujian',
-      label: '游戏大咖',
-      children: [{
-        value: 'basic',
-        label: 'Basic'
-      }, {
-        value: 'form',
-        label: 'Form'
-      }, {
-        value: 'data',
-        label: 'Data'
-      }, {
-        value: 'notice',
-        label: 'Notice'
-      }, {
-        value: 'navigation',
-        label: 'Navigation'
-      }, {
-        value: 'others',
-        label: 'Others'
-      }]
-    }, {
-      value: 'ziyuan',
-      label: '流量',
-      children: [{
-        value: 'axure',
-        label: 'Axure Components'
-      }, {
-        value: 'sketch',
-        label: 'Sketch Templates'
-      }, {
-        value: 'jiaohu',
-        label: '组件交互文档'
-      }]
-    }])
+  computed: {
+    price () {
+      return this.orderForm.selectGood ? `${this.orderForm.selectGood.price}积分` : undefined
+    },
+    extra () {
+      return this.orderForm.selectGood ? `${this.orderForm.selectGood.extra}积分` : undefined
+    }
+  },
+  filters: {
+    labelFilter (label) {
+      const regex = /(<font color='red'>)|(<\/font>)/g
+      return label.replace(regex, '')
+    }
+  },
+  methods: {
+    changeCategory (categoryId) {
+      this.goods = []
+      this.orderForm.selectCategoryId = categoryId
+      apiService.getGoods(this.selectCategoryId)
+        .then(res => {
+          this.goods.push(...res.data)
+        })
+        .catch(err => {
+          // TODO
+          console.log('fetch goods error:', err)
+        })
+    },
+    changeGood (good) {
+      this.orderForm.domains = []
+      let fields
+      if (good.extraHint) {
+        console.log(good.extraHint.replace(/\s/g, ''))
+        fields = JSON.parse(good.extraHint.replace(/\s/g, ''))
+      } else if (good.productTemplate && good.productTemplate.content) {
+        console.log(good.productTemplate.content.replace(/\s/g, ''))
+        fields = JSON.parse(good.productTemplate.content.replace(/\s/g, ''))
+      }
+      if (fields) {
+        fields.forEach(field => {
+          this.orderForm.domains.push(Object.assign({value: ''}, field))
+          this.$set(this.rules, field.name, [{ required: true, message: field.hint }])
+        })
+      }
+    },
+    submit (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+            // TODO 下单
+        }
+      })
+    }
+  },
+  async created () {
+    const res = await apiService.getCategoryList()
+    const cascaderOptions = res.data.map(categoryParent => {
+      let options = {
+        value: categoryParent.id,
+        label: categoryParent.name
+      }
+      let optionsChildern = categoryParent.categoryList.map(category => {
+        return {value: category.id, label: category.name}
+      })
+      options.children = optionsChildern
+      return options
+    })
+    this.options.push(...cascaderOptions)
   }
 }
 </script>
