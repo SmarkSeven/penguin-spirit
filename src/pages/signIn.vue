@@ -18,7 +18,7 @@
             </el-col>
           </el-form-item>
           <el-form-item >
-            <el-input v-model="loginForm.inviteCode" placeholder="邀请码(非必填)"></el-input>
+            <el-input v-if="regMode" v-model="loginForm.inviteCode" placeholder="邀请码(非必填)"></el-input>
           </el-form-item>
           <el-form-item>
             <div class="btn-box"> 
@@ -101,10 +101,10 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           apiService.signIn(this.phone, this.pass)
-          // responsePromise.then(response => {
-          //   console.log(response)
-          // })
-          // .catch(err => console.log('err happen: ', err))
+          .then(response => {
+            console.log(response)
+          })
+          .catch(err => console.log('err happen: ', err))
         }
       })
     },
