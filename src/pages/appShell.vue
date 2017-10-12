@@ -8,6 +8,9 @@
         <el-tab-pane label="订单"></el-tab-pane>
         <el-tab-pane label="积分"></el-tab-pane>
       </el-tabs>
+      <div class="fab" :class="{'signin-link': !signInStatus}" @click="$router.replace('signIn')">
+        <span class="fab-label"></span>
+      </div>
     </el-col>
   </el-row>
 </template>
@@ -17,13 +20,51 @@ import Purchas from './purchas'
 export default {
   components: {
     Purchas
+  },
+  data () {
+    return {
+      signInStatus: true
+    }
+  },
+  created () {
+    setTimeout(() => {
+      this.signInStatus = false
+    }, 1500)
   }
 }
 </script>
 
 <style lang="scss" scoped>
-
 .el-tabs--border-card {
   height: 97vh;
+}
+
+.fab {
+  background-color: #337ab7;
+  position: fixed;
+  right: -10vw;
+  bottom: 70px;
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  opacity: 0;
+  cursor: pointer;
+  transition: 1s;
+}
+
+.fab-label {
+  color: #fff;
+  display: block;
+  line-height: 50px;
+  text-align: center;
+  font-size: 16px;
+  &:before {
+    content: "登陆";
+  }
+}
+
+.signin-link {
+  right: 5vw;
+  opacity: 1;
 }
 </style>
