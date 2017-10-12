@@ -11,9 +11,22 @@
               <el-cascader :options="options" :disabled="options.length === 0" @change="changeCategory" placeholder="请选择商品分类"></el-cascader>
             </el-form-item>
             <el-form-item label="选择商品" prop="selectGood">
-              <el-select v-model="orderForm.selectGood" @change="changeGood" :disabled="goods.length === 0" value-key="id" placeholder="请选择商品">
-                <el-option  v-for="good in goods" :label="good.name | labelFilter" :value="good" :key="good.id"></el-option>
-              </el-select>
+              <el-col v-loading.lock="goodsLoading">
+                <el-select 
+                  v-model="orderForm.selectGood"
+                  @change="changeGood"
+                  :disabled="goods.length === 0"
+                  value-key="id"
+                  placeholder="请选择商品"
+                >
+                  <el-option
+                    v-for="good in goods"
+                    :label="good.name | labelFilter"
+                    :value="good"
+                    :key="good.id"
+                  ></el-option>
+                </el-select>
+              </el-col>
             </el-form-item>
             <el-form-item label="商品价格">
               <el-input :value="price" disabled placeholder="商品价格"></el-input>
@@ -43,6 +56,7 @@ import * as apiService from '../service/mockService'
 export default {
   data () {
     return {
+      goodsLoading: false,
       orderForm: {
         selectCategoryId: 0,
         selectGood: undefined,
@@ -72,13 +86,19 @@ export default {
   },
   methods: {
     changeCategory (categoryId) {
+      this.orderForm.selectGood = undefined
       this.goods = []
       this.orderForm.selectCategoryId = categoryId
-      apiService.getGoods(this.selectCategoryId)
+      this.goodsLoading = true
+      apiService.getGoods(this.orderForm.selectCategoryId[1])
         .then(res => {
           this.goods.push(...res.data)
+          setTimeout(() => {
+            this.goodsLoading = false
+          }, 500)
         })
         .catch(err => {
+          this.goodsLoading = false
           // TODO
           console.log('fetch goods error:', err)
         })
@@ -87,10 +107,8 @@ export default {
       this.orderForm.domains = []
       let fields
       if (good.extraHint) {
-        console.log(good.extraHint.replace(/\s/g, ''))
         fields = JSON.parse(good.extraHint.replace(/\s/g, ''))
       } else if (good.productTemplate && good.productTemplate.content) {
-        console.log(good.productTemplate.content.replace(/\s/g, ''))
         fields = JSON.parse(good.productTemplate.content.replace(/\s/g, ''))
       }
       if (fields) {
