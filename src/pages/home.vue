@@ -104,18 +104,20 @@ export default {
         })
     },
     changeGood (good) {
-      this.orderForm.domains = []
-      let fields
-      if (good.extraHint) {
-        fields = JSON.parse(good.extraHint.replace(/\s/g, ''))
-      } else if (good.productTemplate && good.productTemplate.content) {
-        fields = JSON.parse(good.productTemplate.content.replace(/\s/g, ''))
-      }
-      if (fields) {
-        fields.forEach(field => {
-          this.orderForm.domains.push(Object.assign({value: ''}, field))
-          this.$set(this.rules, field.name, [{ required: true, message: field.hint }])
-        })
+      if (good) {
+        this.orderForm.domains = []
+        let fields
+        if (good.extraHint) {
+          fields = JSON.parse(good.extraHint.replace(/\s/g, ''))
+        } else if (good.productTemplate && good.productTemplate.content) {
+          fields = JSON.parse(good.productTemplate.content.replace(/\s/g, ''))
+        }
+        if (fields) {
+          fields.forEach(field => {
+            this.orderForm.domains.push(Object.assign({value: ''}, field))
+            this.$set(this.rules, field.name, [{ required: true, message: field.hint }])
+          })
+        }
       }
     },
     submit (formName) {
