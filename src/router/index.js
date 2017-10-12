@@ -2,7 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import SignIn from '@/pages/signIn'
 import Register from '@/pages/register'
-import Home from '@/pages/home'
+import AppShell from '@/pages/appShell'
 
 Vue.use(Router)
 
@@ -20,8 +20,8 @@ export default new Router({
     },
     {
       path: '/',
-      name: 'home',
-      component: Home
+      name: 'appShell',
+      component: AppShell
     }
   ]
 })

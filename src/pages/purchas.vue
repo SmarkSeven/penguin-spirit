@@ -1,54 +1,33 @@
 <template>
-  <el-row type="flex" justify="center">
-    <el-col :xs="24" :sm="18" :md="10" :lg="10">
-      <el-tabs type="border-card">
-      <el-tab-pane label="下单">
-        <section class="panel">
-        <h4 class="panel-title">自助下单</h4>
-        <el-card>
-          <el-form ref="orderForm" :model="orderForm" :rules="rules" label-width="80px">
-            <el-form-item label="选择分类" prop="selectCategoryId">
-              <el-cascader :options="options" :disabled="options.length === 0" @change="changeCategory" placeholder="请选择商品分类"></el-cascader>
-            </el-form-item>
-            <el-form-item label="选择商品" prop="selectGood">
-              <el-col v-loading.lock="goodsLoading">
-                <el-select 
-                  v-model="orderForm.selectGood"
-                  @change="changeGood"
-                  :disabled="goods.length === 0"
-                  value-key="id"
-                  placeholder="请选择商品"
-                >
-                  <el-option
-                    v-for="good in goods"
-                    :label="good.name | labelFilter"
-                    :value="good"
-                    :key="good.id"
-                  ></el-option>
-                </el-select>
-              </el-col>
-            </el-form-item>
-            <el-form-item label="商品价格">
-              <el-input :value="price" disabled placeholder="商品价格"></el-input>
-            </el-form-item>
-            <el-form-item label="商品描述">
-              <el-input v-model="extra" disabled placeholder="商品描述"></el-input>
-            </el-form-item>
-            <el-form-item v-for="(domain, index) in orderForm.domains" :label="domain.name" :prop="domain.name" :key="index">
-              <el-input v-model="domain.value" :placeholder="domain.hint"></el-input>
-            </el-form-item>
-            </el-form-item>
-              <input type="button" value="立即购买" class="btn-submit" @click="submit('orderForm')">
-            </el-form>
-          </el-form>
-        </el-card>
-      </section>
-      </el-tab-pane>
-      <el-tab-pane label="订单"></el-tab-pane>
-      <el-tab-pane label="积分"></el-tab-pane>
-    </el-tabs>
-    </el-col>
-  </el-row>
+  <section class="panel">
+    <h4 class="panel-title">自助下单</h4>
+    <el-card>
+      <el-form ref="orderForm" :model="orderForm" :rules="rules" label-width="80px">
+        <el-form-item label="选择分类" prop="selectCategoryId">
+          <el-cascader :options="options" :disabled="options.length === 0" @change="changeCategory" placeholder="请选择商品分类"></el-cascader>
+        </el-form-item>
+        <el-form-item label="选择商品" prop="selectGood">
+          <el-col v-loading.lock="goodsLoading">
+            <el-select v-model="orderForm.selectGood" @change="changeGood" :disabled="goods.length === 0" value-key="id" placeholder="请选择商品">
+              <el-option v-for="good in goods" :label="good.name | labelFilter" :value="good" :key="good.id"></el-option>
+            </el-select>
+          </el-col>
+        </el-form-item>
+        <el-form-item label="商品价格">
+          <el-input :value="price" disabled placeholder="商品价格"></el-input>
+        </el-form-item>
+        <el-form-item label="商品描述">
+          <el-input v-model="extra" disabled placeholder="商品描述"></el-input>
+        </el-form-item>
+        <el-form-item v-for="(domain, index) in orderForm.domains" :label="domain.name" :prop="domain.name" :key="index">
+          <el-input v-model="domain.value" :placeholder="domain.hint"></el-input>
+        </el-form-item>
+        </el-form-item>
+        <input type="button" value="立即购买" class="btn-submit" @click="submit('orderForm')">
+      </el-form>
+      </el-form>
+    </el-card>
+  </section>
 </template>
 
 <script>
@@ -114,7 +93,7 @@ export default {
         }
         if (fields) {
           fields.forEach(field => {
-            this.orderForm.domains.push(Object.assign({value: ''}, field))
+            this.orderForm.domains.push(Object.assign({ value: '' }, field))
             this.$set(this.rules, field.name, [{ required: true, message: field.hint }])
           })
         }
@@ -123,7 +102,7 @@ export default {
     submit (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-            // TODO 下单
+          // TODO 下单
         }
       })
     }
@@ -136,7 +115,7 @@ export default {
         label: categoryParent.name
       }
       let optionsChildern = categoryParent.categoryList.map(category => {
-        return {value: category.id, label: category.name}
+        return { value: category.id, label: category.name }
       })
       options.children = optionsChildern
       return options
@@ -156,10 +135,6 @@ export default {
 
 
 <style lang="scss" scoped>
-
-.el-tabs--border-card {
-  height: 97vh;
-}
 
 .panel {
   margin-bottom: 20px;
