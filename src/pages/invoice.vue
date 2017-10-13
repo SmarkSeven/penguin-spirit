@@ -1,6 +1,6 @@
 <template>
   <div class="invoice-list">
-    <el-card v-for="(item, i) in currentPageData" class="invoice-item" :key="item.title">
+    <el-card v-for="(item, i) in currentPageData" class="invoice-item" @click.native.stop="clickItem(item)" :key="item.title">
       <el-row justify="start">
         <el-col class="invoice-title">
           <span v-html="item.title"></span>
@@ -32,6 +32,12 @@
       @current-change="currentChange"
       :total="invoiceList.length">
     </el-pagination>
+    <el-dialog
+      title="订单详情"
+      :visible.sync="dialogVisible"
+      :modal="false"
+      size="full">
+    </el-dialog>
   </div>
 </template>
 
@@ -40,6 +46,7 @@
 export default {
   data () {
     return {
+      dialogVisible: false,
       currentPage: 1,
       invoiceList: [],
       currentPageData: []
@@ -50,6 +57,9 @@ export default {
       const start = (pageNum - 1) * 5
       const end = this.invoiceList.length < start + 5 ? this.invoiceList.length : start + 5
       this.currentPageData = this.invoiceList.slice(start, end)
+    },
+    clickItem (item) {
+      this.dialogVisible = true
     }
   },
   created () {
