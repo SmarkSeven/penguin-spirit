@@ -5,7 +5,9 @@
         <el-tab-pane label="下单">
           <purchas></purchas>
         </el-tab-pane>
-        <el-tab-pane label="订单"></el-tab-pane>
+        <el-tab-pane label="订单">
+          <invoice></invoice>
+        </el-tab-pane>
         <el-tab-pane label="积分"></el-tab-pane>
       </el-tabs>
       <div class="fab" :class="{'signin-link': !signInStatus}" @click="$router.replace('signIn')">
@@ -17,9 +19,11 @@
 
 <script>
 import Purchas from './purchas'
+import Invoice from './invoice'
 export default {
   components: {
-    Purchas
+    Purchas,
+    Invoice
   },
   data () {
     return {
@@ -40,7 +44,7 @@ export default {
 }
 
 .fab {
-  background-color: #337ab7;
+  background-color: #8492A6;
   position: fixed;
   right: -10vw;
   bottom: 70px;
@@ -49,6 +53,7 @@ export default {
   border-radius: 25px;
   opacity: 0;
   cursor: pointer;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04);
   transition: 1s;
 }
 

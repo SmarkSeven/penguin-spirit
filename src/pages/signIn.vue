@@ -2,6 +2,7 @@
   <div class="wrapper">
     <el-row type="flex" justify="center">
       <el-col :xs="20" :sm="10" :md="6" :lg="6">
+        <el-card>
         <el-form ref="loginForm" :model="loginForm" :rules="rules">
           <el-form-item prop="phone">
             <el-input v-model="loginForm.phone" placeholder="请输入手机号"></el-input>
@@ -14,11 +15,11 @@
               <el-input v-model="loginForm.pass" type="number" placeholder="请输入验证码"></el-input>
             </el-col>
             <el-col :span="8" :offset="1">
-              <input  v-if="regMode" value="验证码" type="button" class="btn-code" @click="getCode('loginForm')">
+              <input  value="验证码" type="button" class="btn-code" @click="getCode('loginForm')">
             </el-col>
           </el-form-item>
-          <el-form-item >
-            <el-input v-if="regMode" v-model="loginForm.inviteCode" placeholder="邀请码(非必填)"></el-input>
+          <el-form-item v-if="regMode">
+            <el-input v-model="loginForm.inviteCode" placeholder="邀请码(非必填)"></el-input>
           </el-form-item>
           <el-form-item>
             <div class="btn-box"> 
@@ -27,6 +28,7 @@
             </div>
           </el-form-item>
         </el-form>
+        </el-card>
       </el-col>
     </el-row>
   </div>
@@ -141,7 +143,6 @@ export default {
 
 .btn-submit, .lnk-register, .btn-code {
   width: 49%;
-  padding: 0 22px;
   height: 34px;
   font-size: 12px;
   border: none;
