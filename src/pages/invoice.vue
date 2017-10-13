@@ -37,10 +37,46 @@
       :visible.sync="dialogVisible"
       :modal="false"
       size="full">
+      <el-card class="invoice-info-content" v-loading="loadingInfo">
+        <section class="good-outline">
+          <el-row>
+            <el-col class="sub-title">商品概况</el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="5" class="good-outline-label">商品名称:</el-col>
+            <el-col :span="18" class="good-outline-value">996加班费 </el-col> 
+          </el-row>
+          <el-row>
+            <el-col :span="5" class="good-outline-label">商品描述:</el-col>
+            <el-col :span="18" class="good-outline-value">按开发发你看开发翻看客服那开发你看发你看饭卡放开那可能思考</el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="5" class="good-outline-label">商品价格:</el-col>
+            <el-col :span="18" class="good-outline-value">999积分 </el-col> 
+          </el-row>
+        </section>
+        <section class="invoice-outline">
+          <el-row>
+            <el-col class="sub-title">订单概况</el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="5" class="invoice-outline-label">订单ID:</el-col>
+            <el-col :span="18" class="invoice-outline-value">34BFBJ </el-col> 
+          </el-row>
+          <el-row>
+            <el-col :span="5" class="invoice-outline-label">购买价格:</el-col>
+            <el-col :span="18" class="invoice-outline-value">11积分</el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="5" class="invoice-outline-label">购买时间:</el-col>
+            <el-col :span="18" class="invoice-outline-value">2017-09-29 08:08:08 </el-col> 
+          </el-row>
+        </section>
+        
+      </el-card>
     </el-dialog>
   </div>
 </template>
-
 
 <script>
 export default {
@@ -49,7 +85,8 @@ export default {
       dialogVisible: false,
       currentPage: 1,
       invoiceList: [],
-      currentPageData: []
+      currentPageData: [],
+      loadingInfo: false // 加载订单详情
     }
   },
   methods: {
@@ -60,6 +97,10 @@ export default {
     },
     clickItem (item) {
       this.dialogVisible = true
+      this.loadingInfo = true
+      setTimeout(() => {
+        this.loadingInfo = false
+      }, 1500)
     }
   },
   created () {
@@ -74,6 +115,24 @@ export default {
   }
 }
 </script>
+
+<style>
+.el-dialog__title {
+  color: #475669;
+}
+.el-dialog__body {
+  height: calc(100% - 40px - 40px);
+  padding: 20px 10px;
+}
+.el-loading-spinner .path {
+  stroke-width: 4;
+}
+
+ .invoice-info-content .el-card__body {
+   padding: 0;
+ }
+</style>
+
 
 <style lang="scss" scoped>
 .invoice-list {
@@ -137,5 +196,37 @@ export default {
 
 .el-pagination {
   margin-top: 15px;
+}
+
+.invoice-info-content {
+  height: 100%;
+}
+
+.sub-title {
+  padding: 10px 8px;
+  margin-bottom: 10px;
+  text-align: left;
+  font-size: 16px;
+  color: #FFF;
+  background-color: #8492A6;
+}
+
+.good-outline, .invoice-outline {
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  background-color: #F9FAFC;
+}
+
+.good-outline-label, .invoice-outline-label {
+  padding-right: 6px;
+  text-align: right;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.good-outline-value, .invoice-outline-value {
+  font-size: 14px;
+  font-weight: 400;
+  text-align: left;
 }
 </style>
