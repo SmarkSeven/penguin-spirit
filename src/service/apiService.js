@@ -1,13 +1,16 @@
 import axios from 'axios'
+import Qs from 'qs'
 
 const baseURL = 'http://www.qejl.vip/v1/api/'
 
 axios.interceptors.request.use(
   config => {
-    config.data = JSON.stringify(config.data)
+    config.data = Qs.stringify(config.data)
     config.headers = {
       'Content-Type': 'application/x-www-form-urlencoded'
     }
+    console.log(config.data)
+    return config
   },
   err => {
     return Promise.reject(err)
