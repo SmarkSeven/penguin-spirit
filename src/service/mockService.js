@@ -906,3 +906,126 @@ export async function getGoods (categoryId) {
     ]
   }
 }
+
+export async function getinvoiceInfo (invoiceId) {
+  return {
+    'code': 0,
+    'msg': '操作成功',
+    'data': [
+      {
+        'id': 1825,
+        'extra': '[系统自动处理]下单地址：http://qejl.95jw.cn/index.php  手工名片赞\n卡密：QE_25FZNXFEEAECHQMGGDC6J99X_QE',
+        'createAt': 1506473325000,
+        'updateAt': 1506473325000,
+        'invoice': {
+          'id': 3144,
+          'extra': '',
+          'outExtra': null,
+          'num': 1,
+          'totalPrice': 11,
+          'status': 2,
+          'createAt': 1506473325000,
+          'updateAt': 1506473325000,
+          'user': {
+            'id': 3,
+            'nickName': 'qe_080517_52076',
+            'credit': 1124,
+            'deviceId': '861735033539825',
+            'androidId': '79e56675ae22497a',
+            'inviteCode': '3P5SZNW',
+            'phone': '18566632508',
+            'password': 'e10adc3949ba59abbe56e057f20f883e',
+            'phoneVarifyStatus': 1,
+            'status': 0,
+            'type': 0,
+            'createAt': 1501862400000,
+            'updateAt': 1501862400000,
+            'parent': null,
+            'qq': null,
+            'tel': null,
+            'address': null,
+            'phoneVarifyStatusStr': '验证成功',
+            'typeStr': '普通用户',
+            'statusStr': '启用'
+          },
+          'product': {
+            'id': 117,
+            'name': "『<font color='red'>官方自营</font>』手工名片赞 1000",
+            'extra': '订单每天晚上11.40左右订单开始刷单，急单催单勿下哦！日刷60000+',
+            'extraHint': null,
+            'tags': '',
+            'outExtra': '',
+            'price': 11,
+            'status': 3,
+            'type': 1,
+            'stock': 9999,
+            'limitNum': 9999,
+            'createAt': 1502676008000,
+            'updateAt': 1507435971000,
+            'category': {
+              'id': 1,
+              'name': '名片赞',
+              'status': 0,
+              'createAt': 1501862400000,
+              'updateAt': 1501862400000
+            },
+            'user': {
+              'id': 2,
+              'nickName': '企鹅精灵官方',
+              'credit': 286728,
+              'deviceId': '',
+              'androidId': '',
+              'inviteCode': null,
+              'phone': '18202823228',
+              'password': '0d780a1d8664722ee7a3ef32476f6b9e',
+              'phoneVarifyStatus': 0,
+              'status': 0,
+              'type': 3,
+              'createAt': 1501862400000,
+              'updateAt': 1501862400000,
+              'parent': null,
+              'qq': '1028101430',
+              'tel': '',
+              'address': '',
+              'phoneVarifyStatusStr': '未验证',
+              'typeStr': '供货商',
+              'statusStr': '启用'
+            },
+            'productTemplate': {
+              'id': 4,
+              'name': '空',
+              'content': '[]',
+              'createAt': 1504941888000,
+              'updateAt': 1504941888000,
+              'status': 0
+            },
+            'statusStr': '已上架'
+          },
+          'statusStr': '已完成'
+        },
+        'user': {
+          'id': 3,
+          'nickName': 'qe_080517_52076',
+          'credit': 1124,
+          'deviceId': '861735033539825',
+          'androidId': '79e56675ae22497a',
+          'inviteCode': '3P5SZNW',
+          'phone': '18566632508',
+          'password': 'e10adc3949ba59abbe56e057f20f883e',
+          'phoneVarifyStatus': 1,
+          'status': 0,
+          'type': 0,
+          'createAt': 1501862400000,
+          'updateAt': 1501862400000,
+          'parent': null,
+          'qq': null,
+          'tel': null,
+          'address': null,
+          'phoneVarifyStatusStr': '验证成功',
+          'typeStr': '普通用户',
+          'statusStr': '启用'
+        }
+      }
+    ]
+  }
+}

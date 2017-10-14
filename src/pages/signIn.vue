@@ -102,7 +102,7 @@ export default {
     async signIn (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          apiService.signIn(this.phone, this.pass)
+          apiService.signIn(this.loginForm.phone, this.loginForm.pass)
           .then(response => {
             console.log(response)
           })

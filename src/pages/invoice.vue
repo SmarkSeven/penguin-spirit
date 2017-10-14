@@ -1,6 +1,6 @@
 <template>
-  <div class="invoice-list">
-    <el-card v-for="(item, i) in currentPageData" class="invoice-item" @click.native.stop="clickItem(item)" :key="item.title">
+  <div class="invoice-list" ref="abc">
+    <el-card  v-for="(item, i) in currentPageData" class="invoice-item" @click.native.stop="clickItem(item)" :key="item.title">
       <el-row justify="start">
         <el-col class="invoice-title">
           <span v-html="item.title"></span>
@@ -26,112 +26,70 @@
       <span class="invoice-no-data">没有历史订单</span>
     </el-card>
     <el-pagination
+      v-if="invoiceList.length != 0"
       layout="prev, pager, next"
       :current-page="currentPage"
-      :page-size="5"
+      :page-size="pageSize"
       @current-change="currentChange"
       :total="invoiceList.length">
     </el-pagination>
-    <el-dialog
-      title="订单详情"
-      :visible.sync="dialogVisible"
-      :modal="false"
-      size="full">
-      <el-card class="invoice-info-content" v-loading="loadingInfo">
-        <section class="good-outline">
-          <el-row>
-            <el-col class="sub-title">商品概况</el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="5" class="good-outline-label">商品名称:</el-col>
-            <el-col :span="18" class="good-outline-value">996加班费 </el-col> 
-          </el-row>
-          <el-row>
-            <el-col :span="5" class="good-outline-label">商品描述:</el-col>
-            <el-col :span="18" class="good-outline-value">按开发发你看开发翻看客服那开发你看发你看饭卡放开那可能思考</el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="5" class="good-outline-label">商品价格:</el-col>
-            <el-col :span="18" class="good-outline-value">999积分 </el-col> 
-          </el-row>
-        </section>
-        <section class="invoice-outline">
-          <el-row>
-            <el-col class="sub-title">订单概况</el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="5" class="invoice-outline-label">订单ID:</el-col>
-            <el-col :span="18" class="invoice-outline-value">34BFBJ </el-col> 
-          </el-row>
-          <el-row>
-            <el-col :span="5" class="invoice-outline-label">购买价格:</el-col>
-            <el-col :span="18" class="invoice-outline-value">11积分</el-col>
-          </el-row>
-          <el-row>
-            <el-col :span="5" class="invoice-outline-label">购买时间:</el-col>
-            <el-col :span="18" class="invoice-outline-value">2017-09-29 08:08:08 </el-col> 
-          </el-row>
-        </section>
-        
-      </el-card>
-    </el-dialog>
+    <invoice-info v-if="currentInvoiceInfo" :invoiceInfo="currentInvoiceInfo" @close="closeDialog" :class="{'is-show': invoiceInfoVisible}"></invoice-info>
   </div>
 </template>
 
 <script>
+import InvoiceInfo from './invoiceInfo'
+import * as apiService from '../service/mockService'
 export default {
+  components: {
+    InvoiceInfo
+  },
   data () {
     return {
-      dialogVisible: false,
+      invoiceInfoVisible: false,
       currentPage: 1,
       invoiceList: [],
       currentPageData: [],
-      loadingInfo: false // 加载订单详情
+      loadingInfo: false, // 加载订单详情
+      currentInvoiceInfo: undefined, // 当前订单详情
+      pageSize: 5 // 每页数据条数
+
     }
   },
   methods: {
     currentChange (pageNum) {
-      const start = (pageNum - 1) * 5
-      const end = this.invoiceList.length < start + 5 ? this.invoiceList.length : start + 5
+      const start = (pageNum - 1) * this.pageSize
+      const end = this.invoiceList.length < start + this.pageSize ? this.invoiceList.length : start + this.pageSize
       this.currentPageData = this.invoiceList.slice(start, end)
     },
     clickItem (item) {
-      this.dialogVisible = true
-      this.loadingInfo = true
-      setTimeout(() => {
-        this.loadingInfo = false
-      }, 1500)
+      apiService.getinvoiceInfo(item.id)
+        .then(reps => {
+          this.invoiceInfoVisible = true
+          this.currentInvoiceInfo = reps.data[0]
+        })
+        .catch(err => {
+          console.log('getinvoiceInfo err:', err)
+        })
+    },
+    closeDialog () {
+      this.invoiceInfoVisible = false
     }
   },
   created () {
+    // 计算每页显示数据条数
+    this.pageSize = Math.floor((window.document.documentElement.clientHeight * 0.97 - 119) / 101)
     for (let i = 0; i < 30; i++) {
       this.invoiceList.push({
         title: `『<font color='red'>新用户专享</font>』快刷名片赞${i + 1}`,
         status: '已完成'
       })
-      const end = this.invoiceList.length >= 5 ? 5 : this.invoiceList.length - 1
+      const end = this.invoiceList.length >= this.pageSize ? this.pageSize : this.invoiceList.length - 1
       this.currentPageData = this.invoiceList.slice(0, end)
     }
   }
 }
 </script>
-
-<style>
-.el-dialog__title {
-  color: #475669;
-}
-.el-dialog__body {
-  height: calc(100% - 40px - 40px);
-  padding: 20px 10px;
-}
-.el-loading-spinner .path {
-  stroke-width: 4;
-}
-
- .invoice-info-content .el-card__body {
-   padding: 0;
- }
-</style>
 
 
 <style lang="scss" scoped>
@@ -196,37 +154,5 @@ export default {
 
 .el-pagination {
   margin-top: 15px;
-}
-
-.invoice-info-content {
-  height: 100%;
-}
-
-.sub-title {
-  padding: 10px 8px;
-  margin-bottom: 10px;
-  text-align: left;
-  font-size: 16px;
-  color: #FFF;
-  background-color: #8492A6;
-}
-
-.good-outline, .invoice-outline {
-  margin-bottom: 14px;
-  padding-bottom: 10px;
-  background-color: #F9FAFC;
-}
-
-.good-outline-label, .invoice-outline-label {
-  padding-right: 6px;
-  text-align: right;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.good-outline-value, .invoice-outline-value {
-  font-size: 14px;
-  font-weight: 400;
-  text-align: left;
 }
 </style>

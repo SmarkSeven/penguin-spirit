@@ -38,9 +38,20 @@ export default {
 }
 </script>
 
+<style>
+.el-tabs__content {
+  height: calc(100% - 42px - 30px);
+}
+</style>
+
+
 <style lang="scss" scoped>
 .el-tabs--border-card {
   height: 97vh;
+}
+
+.el-tab-pane {
+  height: 100%;
 }
 
 .fab {

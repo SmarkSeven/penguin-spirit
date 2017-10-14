@@ -9,7 +9,7 @@ function resolve (dir) {
 }
 
 module.exports = {
-  entry: {
+  entry:{
     app: './src/main.js'
   },
   output: {
