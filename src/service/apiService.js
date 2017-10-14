@@ -121,3 +121,18 @@ export async function register (phone, pwd, nickName, inviteCode, phoneCode, par
     return response
   })
 }
+/**
+ * 提交订单
+ * @param {string} userId 用户id
+ * @param {string} productId 商品id
+ * @param {string} extra 订单信息
+ */
+export async function createInvoice (userId, productId, extra) {
+  await axios.post(`${baseURL}invoice/save`, {
+    userId,
+    productId,
+    extra
+  }).then(response => {
+    return response
+  })
+}
