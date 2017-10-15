@@ -30,7 +30,10 @@ export function signIn (phone, password) {
 export function getCategoryList () {
   return axios.post('/categoryparent/list')
     .then(response => {
-      return response.data
+      if (response.data.code !== 0) {
+        throw new Error(response.data.code)
+      }
+      return response.data.data
     })
 }
 
@@ -41,7 +44,10 @@ export function getCategoryList () {
 export async function getGoods (categoryId) {
   return axios.post('/product/list/category', { categoryId })
     .then(response => {
-      return response.data
+      if (response.data.code !== 0) {
+        throw new Error(response.data.code)
+      }
+      return response.data.data
     })
 }
 
@@ -54,7 +60,10 @@ export async function getGoods (categoryId) {
 export function getInvoiceList (userId, pageNum, numPerPage) {
   return axios.post('/user/invoice/list', { userId, pageNum, numPerPage })
     .then(response => {
-      return response.data
+      if (response.data.code !== 0) {
+        throw new Error(response.data.code)
+      }
+      return response.data.data
     })
 }
 
@@ -65,7 +74,10 @@ export function getInvoiceList (userId, pageNum, numPerPage) {
 export function getInvoiceProcessList (invoiceId) {
   return axios.post('/invoice/process/list', { invoiceId })
     .then(response => {
-      return response.data
+      if (response.data.code !== 0) {
+        throw new Error(response.data.code)
+      }
+      return response.data.data
     })
 }
 
@@ -77,7 +89,10 @@ export function getInvoiceProcessList (invoiceId) {
 export function getSmsCode (phone, type) {
   return axios.post('/getSmsCode', { phone, type })
     .then(response => {
-      return response.data
+      if (response.data.code !== 0) {
+        throw new Error(response.data.code)
+      }
+      return response.data.data
     })
 }
 
@@ -88,7 +103,10 @@ export function getSmsCode (phone, type) {
 export function getUserInfo (id) {
   return axios.post('user/queryUserById', { id })
     .then(response => {
-      return response.data
+      if (response.data.code !== 0) {
+        throw new Error(response.data.code)
+      }
+      return response.data.data
     })
 }
 
@@ -126,6 +144,9 @@ export function createInvoice (userId, productId, extra) {
     productId,
     extra
   }).then(response => {
-    return response.data
+    if (response.data.code !== 0) {
+      throw new Error(response.data.code)
+    }
+    return response.data.data
   })
 }
