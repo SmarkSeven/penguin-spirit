@@ -21,7 +21,7 @@ axios.interceptors.request.use(
   * @return {Promise}
   */
 export async function signIn (phone, password) {
-  return await axios.post('/user/login', { phone, password }, {baseURL: 'http://www.qejl.vip/api'})
+  return await axios.post('/user/login', { phone, password })
     .then(response => {
       return response.data
     })
