@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import * as apiService from '../service/apiService'
 import Purchas from './purchas'
 import Invoice from './invoice'
 export default {
@@ -46,7 +47,7 @@ export default {
     }
   },
   created () {
-    const user = localStorage.getItem('QEJL/WEBAPP/CURRENTUSER')
+    const user = apiService.getLocalUserInfo()
     if (user) {
       this.signInStatus = true
     }
