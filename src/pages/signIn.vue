@@ -35,6 +35,7 @@
 </template>
 
 <script>
+import Raven from 'raven-js'
 import * as apiService from '../service/apiService'
 export default {
   data () {
@@ -91,6 +92,7 @@ export default {
         localStorage.removeItem('test')
         return true
       } catch (e) {
+        Raven.captureException(e)
         return false
       }
     },
@@ -103,7 +105,6 @@ export default {
         if (valid) {
             // TODO login
         } else {
-          console.log('error submit!!')
           return false
         }
       })
@@ -119,11 +120,14 @@ export default {
             }
             this.$router.replace({path: '/'})
           })
-          .catch(err => this.$message({
-            message: err.message,
-            type: 'warning',
-            showClose: true
-          }))
+          .catch(err => {
+            Raven.captureException(err)
+            this.$message({
+              message: err.message,
+              type: 'warning',
+              showClose: true
+            })
+          })
         }
       })
     },
