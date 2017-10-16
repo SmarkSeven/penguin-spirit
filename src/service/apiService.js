@@ -5,13 +5,39 @@ import axios from 'axios'
 axios.defaults.baseURL = 'http://www.qejl.vip/v1/api'
 axios.defaults.timeout = 5000
 
+/**
+ * 格式化参数
+ * @param {any} data // 请求参数对象
+ * @returns {string}
+ */
+function toFormatData (params) {
+  let res = ''
+  for (let key in params) {
+    if (params.hasOwnProperty(key)) {
+      res = res + `${key}=${params[key]}&&`
+    }
+  }
+  return res.replace(/&&$/, '')
+}
+
 axios.interceptors.request.use(
   config => {
-    config.data = JSON.stringify(config.data)
+    config.data = toFormatData(config.data)
     return config
   },
   err => Promise.reject(err)
 )
+
+axios.interceptors.response.use(response => {
+  if (response.data.code !== 0 && response.config.url !== `${response.config.baseURL}/user/login`) {
+    throw new Error(response.data.code)
+  } else if (response.config.url === `${response.config.baseURL}/user/login`) {
+    return response.data
+  }
+  return response.data.data
+}, err => {
+  return Promise.reject(err)
+})
 
 /**
   * 登录
@@ -22,9 +48,6 @@ axios.interceptors.request.use(
   */
 export async function signIn (phone, password) {
   return await axios.post('/user/login', { phone, password })
-    .then(response => {
-      return response.data
-    })
 }
 
 /**
@@ -33,12 +56,6 @@ export async function signIn (phone, password) {
  */
 export async function getCategoryList () {
   return await axios.post('/categoryparent/list')
-    .then(response => {
-      if (response.data.code !== 0) {
-        throw new Error(response.data.code)
-      }
-      return response.data.data
-    })
 }
 
 /**
@@ -48,12 +65,6 @@ export async function getCategoryList () {
  */
 export async function getGoods (categoryId) {
   return await axios.post('/product/list/category', { categoryId })
-    .then(response => {
-      if (response.data.code !== 0) {
-        throw new Error(response.data.code)
-      }
-      return response.data.data
-    })
 }
 
 /**
@@ -65,12 +76,6 @@ export async function getGoods (categoryId) {
  */
 export async function getInvoiceList (userId, pageNum, numPerPage) {
   return await axios.post('/user/invoice/list', { userId, pageNum, numPerPage })
-    .then(response => {
-      if (response.data.code !== 0) {
-        throw new Error(response.data.code)
-      }
-      return response.data.data
-    })
 }
 
 /**
@@ -80,12 +85,6 @@ export async function getInvoiceList (userId, pageNum, numPerPage) {
  */
 export async function getInvoiceProcessList (invoiceId) {
   return await axios.post('/invoice/process/list', { invoiceId })
-    .then(response => {
-      if (response.data.code !== 0) {
-        throw new Error(response.data.code)
-      }
-      return response.data.data
-    })
 }
 
 /**
@@ -96,12 +95,6 @@ export async function getInvoiceProcessList (invoiceId) {
  */
 export async function getSmsCode (phone, type) {
   return await axios.post('/getSmsCode', { phone, type })
-    .then(response => {
-      if (response.data.code !== 0) {
-        throw new Error(response.data.code)
-      }
-      return response.data.data
-    })
 }
 
 /**
@@ -111,12 +104,6 @@ export async function getSmsCode (phone, type) {
  */
 export async function getUserInfo (id) {
   return await axios.post('user/queryUserById', { id })
-    .then(response => {
-      if (response.data.code !== 0) {
-        throw new Error(response.data.code)
-      }
-      return response.data.data
-    })
 }
 
 /**
@@ -137,8 +124,6 @@ export async function register (phone, pwd, nickName, inviteCode, phoneCode, par
     inviteCode,
     phoneCode,
     parentInviteCode
-  }).then(response => {
-    return response.data
   })
 }
 
@@ -150,14 +135,5 @@ export async function register (phone, pwd, nickName, inviteCode, phoneCode, par
  * @return {Promise}
  */
 export async function createInvoice (userId, productId, extra) {
-  return await axios.post('/invoice/save', {
-    userId,
-    productId,
-    extra
-  }).then(response => {
-    if (response.data.code !== 0) {
-      throw new Error(response.data.code)
-    }
-    return response.data.data
-  })
+  return await axios.post('/invoice/save', { userId, productId, extra })
 }
