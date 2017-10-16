@@ -259,7 +259,8 @@ export default {
 .good-outline-value, .invoice-outline-value {
   flex: 1;
   margin-bottom: 4px;
-  font-size: 12px;  
+  padding-right: 12px;
+  font-size: 8px;
   font-weight: 500;
   line-height: 22px;
   color: #99A9BF;
