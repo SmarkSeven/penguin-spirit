@@ -146,5 +146,6 @@ export async function createInvoice (userId, productId, extra) {
  * @returns {any}
  */
 export function getLocalUserInfo () {
-  return localStorage.getItem('QEJL/WEBAPP/CURRENTUSER')
+  const user = localStorage.getItem('QEJL/WEBAPP/CURRENTUSER')
+  return user ? JSON.parse(user) : undefined
 }

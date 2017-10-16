@@ -116,7 +116,7 @@ export default {
           .then(response => {
             let { id, phone, inviteCode, nickName } = response
             if (this.checkLocalStorageSupported()) {
-              localStorage.setItem('QEJL/WEBAPP/CURRENTUSER', { id, phone, inviteCode, nickName })
+              localStorage.setItem('QEJL/WEBAPP/CURRENTUSER', JSON.stringify({ id, phone, inviteCode, nickName }))
             }
             this.$router.replace({path: '/'})
           })
