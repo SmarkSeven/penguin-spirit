@@ -54,7 +54,7 @@ export default {
       return this.orderForm.selectGood ? `${this.orderForm.selectGood.price}积分` : undefined
     },
     extra () {
-      return this.orderForm.selectGood ? `${this.orderForm.selectGood.extra}积分` : undefined
+      return this.orderForm.selectGood ? this.orderForm.selectGood.extra : undefined
     }
   },
   filters: {
