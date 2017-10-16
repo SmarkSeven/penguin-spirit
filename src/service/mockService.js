@@ -1,8 +1,9 @@
+// @ts-check
 /**
  * 登录
- * @param {any} phone
- * @param {any} password
- * @returns
+ * @param {string} phone
+ * @param {string} password
+ * @returns {Promise}
  */
 export async function signIn (phone, password) {
   return {
@@ -478,8 +479,8 @@ export async function getCategoryList () {
 
 /**
  * 商品分类
- * @param {any} categoryId 商品分类ID
- * @returns
+ * @param {number} categoryId 商品分类ID
+ * @returns {Promise}
  */
 export async function getGoods (categoryId) {
   return {

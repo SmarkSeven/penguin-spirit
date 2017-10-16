@@ -1,12 +1,12 @@
 <template>
   <el-row type="flex" justify="center">
     <el-col :xs="24" :sm="18" :md="10" :lg="10">
-      <el-tabs type="border-card">
+      <el-tabs type="border-card" @tab-click="tabClick">
         <el-tab-pane label="下单">
           <purchas></purchas>
         </el-tab-pane>
         <el-tab-pane label="订单">
-          <invoice></invoice>
+          <invoice v-if="signInStatus"></invoice>
         </el-tab-pane>
         <el-tab-pane label="积分"></el-tab-pane>
       </el-tabs>
@@ -27,7 +27,22 @@ export default {
   },
   data () {
     return {
-      signInStatus: true
+      signInStatus: false
+    }
+  },
+  methods: {
+    tabClick () {
+      if (!this.signInStatus) {
+        this.$message.closeAll()
+        this.open()
+      }
+    },
+    open () {
+      this.$message({
+        message: '请登录',
+        type: 'warning',
+        showClose: true
+      })
     }
   },
   created () {

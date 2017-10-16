@@ -1,6 +1,8 @@
+// @ts-check
+
 import axios from 'axios'
 
-axios.defaults.baseURL = 'http://www.qejl.vip/api'
+axios.defaults.baseURL = 'http://www.qejl.vip/v1/api'
 axios.defaults.timeout = 5000
 
 axios.interceptors.request.use(
@@ -16,9 +18,10 @@ axios.interceptors.request.use(
   *
   * @param {string} phone 手机号
   * @param {string} password 密码
+  * @return {Promise}
   */
-export function signIn (phone, password) {
-  return axios.post('/user/login', { phone, password })
+export async function signIn (phone, password) {
+  return await axios.post('/user/login', { phone, password }, {baseURL: 'http://www.qejl.vip/api'})
     .then(response => {
       return response.data
     })
@@ -26,9 +29,10 @@ export function signIn (phone, password) {
 
 /**
  * 获取商品分类
+ * @return {Promise}
  */
-export function getCategoryList () {
-  return axios.post('/categoryparent/list')
+export async function getCategoryList () {
+  await axios.post('/categoryparent/list')
     .then(response => {
       if (response.data.code !== 0) {
         throw new Error(response.data.code)
@@ -39,10 +43,11 @@ export function getCategoryList () {
 
 /**
  * 获取分类下的商品
- * @param {any} categoryId 商品分类id
+ * @param {number} categoryId 商品分类id
+ * @return {Promise}
  */
 export async function getGoods (categoryId) {
-  return axios.post('/product/list/category', { categoryId })
+  await axios.post('/product/list/category', { categoryId })
     .then(response => {
       if (response.data.code !== 0) {
         throw new Error(response.data.code)
@@ -54,11 +59,12 @@ export async function getGoods (categoryId) {
 /**
  *
  * @param {string} userId 用户id
- * @param {int} pageNum 当前页码
- * @param {int} numPerPage 每页的数量
+ * @param {number} pageNum 当前页码
+ * @param {number} numPerPage 每页的数量
+ * @return {Promise}
  */
-export function getInvoiceList (userId, pageNum, numPerPage) {
-  return axios.post('/user/invoice/list', { userId, pageNum, numPerPage })
+export async function getInvoiceList (userId, pageNum, numPerPage) {
+  await axios.post('/user/invoice/list', { userId, pageNum, numPerPage })
     .then(response => {
       if (response.data.code !== 0) {
         throw new Error(response.data.code)
@@ -70,9 +76,10 @@ export function getInvoiceList (userId, pageNum, numPerPage) {
 /**
  * 获取订单流程
  * @param {string} invoiceId 订单id
+ * @return {Promise}
  */
-export function getInvoiceProcessList (invoiceId) {
-  return axios.post('/invoice/process/list', { invoiceId })
+export async function getInvoiceProcessList (invoiceId) {
+  await axios.post('/invoice/process/list', { invoiceId })
     .then(response => {
       if (response.data.code !== 0) {
         throw new Error(response.data.code)
@@ -85,9 +92,10 @@ export function getInvoiceProcessList (invoiceId) {
  * 获取验证码
  * @param {string} phone 手机号
  * @param {string} type 0 注册绑定手机，1 重置密码
+ * @return {Promise}
  */
-export function getSmsCode (phone, type) {
-  return axios.post('/getSmsCode', { phone, type })
+export async function getSmsCode (phone, type) {
+  await axios.post('/getSmsCode', { phone, type })
     .then(response => {
       if (response.data.code !== 0) {
         throw new Error(response.data.code)
@@ -99,9 +107,10 @@ export function getSmsCode (phone, type) {
 /**
  * 查询用户信息
  * @param {string} id 用户id
+ * @return {Promise}
  */
-export function getUserInfo (id) {
-  return axios.post('user/queryUserById', { id })
+export async function getUserInfo (id) {
+  await axios.post('user/queryUserById', { id })
     .then(response => {
       if (response.data.code !== 0) {
         throw new Error(response.data.code)
@@ -118,9 +127,10 @@ export function getUserInfo (id) {
  * @param {string} invitecode 邀请码(生成)
  * @param {string} phoneCode 验证码
  * @param {string} parentInviteCode 上级邀请码
+ * @return {Promise}
  */
-export function register (phone, pwd, nickName, inviteCode, phoneCode, parentInviteCode) {
-  return axios.post('/user/register', {
+export async function register (phone, pwd, nickName, inviteCode, phoneCode, parentInviteCode) {
+  await axios.post('/user/register', {
     phone,
     pwd,
     nickName,
@@ -137,9 +147,10 @@ export function register (phone, pwd, nickName, inviteCode, phoneCode, parentInv
  * @param {string} userId 用户id
  * @param {string} productId 商品id
  * @param {string} extra 订单信息
+ * @return {Promise}
  */
-export function createInvoice (userId, productId, extra) {
-  return axios.post('/invoice/save', {
+export async function createInvoice (userId, productId, extra) {
+  await axios.post('/invoice/save', {
     userId,
     productId,
     extra
