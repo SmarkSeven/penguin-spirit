@@ -139,3 +139,12 @@ export async function register (phone, pwd, nickName, inviteCode, phoneCode, par
 export async function createInvoice (userId, productId, extra) {
   return await axios.post('/invoice/save', { userId, productId, extra })
 }
+
+/**
+ * 从本地缓存获取用户信息
+ * @export
+ * @returns {any}
+ */
+export function getLocalUserInfo () {
+  return localStorage.getItem('QEJL/WEBAPP/CURRENTUSER')
+}

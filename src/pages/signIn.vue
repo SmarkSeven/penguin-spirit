@@ -85,6 +85,15 @@ export default {
     }
   },
   methods: {
+    checkLocalStorageSupported () {
+      try {
+        localStorage.setItem('test', 'test')
+        localStorage.removeItem('test')
+        return true
+      } catch (e) {
+        return false
+      }
+    },
     checkCode (code) {
       const pattern = /^\d{8}$/
       return pattern.test(code)
@@ -104,9 +113,17 @@ export default {
         if (valid) {
           apiService.signIn(this.loginForm.phone, this.loginForm.pass)
           .then(response => {
-            console.log(response)
+            let { id, phone, inviteCode, nickName } = response
+            if (this.checkLocalStorageSupported()) {
+              localStorage.setItem('QEJL/WEBAPP/CURRENTUSER', { id, phone, inviteCode, nickName })
+            }
+            this.$router.replace({path: '/'})
           })
-          .catch(err => console.log('err happen: ', err))
+          .catch(err => this.$message({
+            message: err.message,
+            type: 'warning',
+            showClose: true
+          }))
         }
       })
     },

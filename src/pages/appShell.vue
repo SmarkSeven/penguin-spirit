@@ -46,9 +46,10 @@ export default {
     }
   },
   created () {
-    setTimeout(() => {
-      this.signInStatus = false
-    }, 1500)
+    const user = localStorage.getItem('QEJL/WEBAPP/CURRENTUSER')
+    if (user) {
+      this.signInStatus = true
+    }
   }
 }
 </script>
