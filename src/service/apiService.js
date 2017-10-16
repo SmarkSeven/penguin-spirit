@@ -32,7 +32,7 @@ export async function signIn (phone, password) {
  * @return {Promise}
  */
 export async function getCategoryList () {
-  await axios.post('/categoryparent/list')
+  return await axios.post('/categoryparent/list')
     .then(response => {
       if (response.data.code !== 0) {
         throw new Error(response.data.code)
@@ -47,7 +47,7 @@ export async function getCategoryList () {
  * @return {Promise}
  */
 export async function getGoods (categoryId) {
-  await axios.post('/product/list/category', { categoryId })
+  return await axios.post('/product/list/category', { categoryId })
     .then(response => {
       if (response.data.code !== 0) {
         throw new Error(response.data.code)
@@ -64,7 +64,7 @@ export async function getGoods (categoryId) {
  * @return {Promise}
  */
 export async function getInvoiceList (userId, pageNum, numPerPage) {
-  await axios.post('/user/invoice/list', { userId, pageNum, numPerPage })
+  return await axios.post('/user/invoice/list', { userId, pageNum, numPerPage })
     .then(response => {
       if (response.data.code !== 0) {
         throw new Error(response.data.code)
@@ -79,7 +79,7 @@ export async function getInvoiceList (userId, pageNum, numPerPage) {
  * @return {Promise}
  */
 export async function getInvoiceProcessList (invoiceId) {
-  await axios.post('/invoice/process/list', { invoiceId })
+  return await axios.post('/invoice/process/list', { invoiceId })
     .then(response => {
       if (response.data.code !== 0) {
         throw new Error(response.data.code)
@@ -95,7 +95,7 @@ export async function getInvoiceProcessList (invoiceId) {
  * @return {Promise}
  */
 export async function getSmsCode (phone, type) {
-  await axios.post('/getSmsCode', { phone, type })
+  return await axios.post('/getSmsCode', { phone, type })
     .then(response => {
       if (response.data.code !== 0) {
         throw new Error(response.data.code)
@@ -110,7 +110,7 @@ export async function getSmsCode (phone, type) {
  * @return {Promise}
  */
 export async function getUserInfo (id) {
-  await axios.post('user/queryUserById', { id })
+  return await axios.post('user/queryUserById', { id })
     .then(response => {
       if (response.data.code !== 0) {
         throw new Error(response.data.code)
@@ -130,7 +130,7 @@ export async function getUserInfo (id) {
  * @return {Promise}
  */
 export async function register (phone, pwd, nickName, inviteCode, phoneCode, parentInviteCode) {
-  await axios.post('/user/register', {
+  return await axios.post('/user/register', {
     phone,
     pwd,
     nickName,
@@ -150,7 +150,7 @@ export async function register (phone, pwd, nickName, inviteCode, phoneCode, par
  * @return {Promise}
  */
 export async function createInvoice (userId, productId, extra) {
-  await axios.post('/invoice/save', {
+  return await axios.post('/invoice/save', {
     userId,
     productId,
     extra
