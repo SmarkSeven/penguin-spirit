@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import * as apiService from '../service/mockService'
+import * as apiService from '../service/apiService'
 export default {
   data () {
     return {
@@ -71,7 +71,7 @@ export default {
       this.goodsLoading = true
       apiService.getGoods(this.orderForm.selectCategoryId[1])
         .then(res => {
-          this.goods.push(...res.data)
+          this.goods.push(...res)
           setTimeout(() => {
             this.goodsLoading = false
           }, 500)
@@ -109,7 +109,7 @@ export default {
   },
   async created () {
     const res = await apiService.getCategoryList()
-    const cascaderOptions = res.data.map(categoryParent => {
+    const cascaderOptions = res.map(categoryParent => {
       let options = {
         value: categoryParent.id,
         label: categoryParent.name

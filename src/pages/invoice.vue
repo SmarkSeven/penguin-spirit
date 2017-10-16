@@ -39,7 +39,7 @@
 
 <script>
 import InvoiceInfo from './invoiceInfo'
-import * as apiService from '../service/mockService'
+import * as apiService from '../service/apiService'
 export default {
   components: {
     InvoiceInfo
