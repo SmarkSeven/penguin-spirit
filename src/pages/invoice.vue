@@ -3,21 +3,20 @@
     <el-card  v-for="(item, i) in currentPageData" class="invoice-item" @click.native.stop="clickItem(item)" :key="item.title">
       <el-row justify="start">
         <el-col class="invoice-title">
-          <span v-html="item.title"></span>
+          <span v-html="item.product.name"></span>
         </el-col>
       </el-row>
       <el-row justify="end">
         <el-col class="invoice-status">
-          <span v-if="i % 3 === 1" class="invoice-status-success">已完成</span>
-          <span v-else class="invoice-status-cancel">已退款</span>
+          <span :class="{'invoice-status-cancel': item.statusStr !== '已完成', 'invoice-status-success': item.statusStr === '已完成'}">{{item.statusStr}}</span>
         </el-col>
       </el-row>
       <el-row justify="start">
         <el-col class="invoice-info">
           <span class="price-icon">￥</span>
-          <span class="invoice-price">150积分</span>
+          <span class="invoice-price">{{item.totalPrice}}积分</span>
           <i class="el-icon-time" ></i>
-          <span class="invoice-date">2017-10-09: 08:40</span>
+          <span class="invoice-date">{{new Date(item.createAt).toLocaleString()}}</span>
         </el-col>
       </el-row>
     </el-card>
@@ -38,6 +37,7 @@
 </template>
 
 <script>
+import Raven from 'raven-js'
 import InvoiceInfo from './invoiceInfo'
 import * as apiService from '../service/apiService'
 export default {
@@ -46,6 +46,7 @@ export default {
   },
   data () {
     return {
+      userInfo: undefined,
       invoiceInfoVisible: false,
       currentPage: 1,
       invoiceList: [],
@@ -63,13 +64,13 @@ export default {
       this.currentPageData = this.invoiceList.slice(start, end)
     },
     clickItem (item) {
-      apiService.getinvoiceInfo(item.id)
+      apiService.getInvoiceInfo(item.id)
         .then(reps => {
           this.invoiceInfoVisible = true
           this.currentInvoiceInfo = reps.data[0]
         })
         .catch(err => {
-          console.log('getinvoiceInfo err:', err)
+          Raven.captureException(err)
         })
     },
     closeDialog () {
@@ -79,14 +80,21 @@ export default {
   created () {
     // 计算每页显示数据条数
     this.pageSize = Math.floor((window.document.documentElement.clientHeight * 0.97 - 119) / 101)
-    for (let i = 0; i < 30; i++) {
-      this.invoiceList.push({
-        title: `『<font color='red'>新用户专享</font>』快刷名片赞${i + 1}`,
-        status: '已完成'
+    this.userInfo = apiService.getLocalUserInfo()
+    apiService.getInvoiceList(this.userInfo.id, 1, 100)
+      .then(res => {
+        this.invoiceList = res.data
+        const end = this.invoiceList.length >= this.pageSize ? this.pageSize : this.invoiceList.length - 1
+        this.currentPageData = this.invoiceList.slice(0, end)
       })
-      const end = this.invoiceList.length >= this.pageSize ? this.pageSize : this.invoiceList.length - 1
-      this.currentPageData = this.invoiceList.slice(0, end)
-    }
+      .catch(err => {
+        Raven.captureException(err)
+        this.$message({
+          message: '获取订单列表失败',
+          type: 'error',
+          showClose: true
+        })
+      })
   }
 }
 </script>
@@ -105,8 +113,18 @@ export default {
 .invoice-title, .invoice-info, .invoice-status {
   font-size: 14px;
 }
+.invoice-info {
+  .invoice-price, .invoice-date  {
+    color: #475669;
+    font-weight: 500;
+  }
+}
 
 .invoice-title {
+  padding-right: 3rem;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
   span {
     font-size: 14px;
     font-weight: 700;

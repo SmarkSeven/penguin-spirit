@@ -70,7 +70,7 @@ export async function getGoods (categoryId) {
 }
 
 /**
- *
+ * 获取订单列表
  * @param {string} userId 用户id
  * @param {number} pageNum 当前页码
  * @param {number} numPerPage 每页的数量

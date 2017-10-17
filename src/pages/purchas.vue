@@ -121,7 +121,7 @@ export default {
           apiService.createInvoice(this.userInfo.id, this.orderForm.selectGood.id, extra)
             .then(() => {
               this.$message({
-                message: '您的订单已提交',
+                message: '您的订单提交成功',
                 type: 'success',
                 showClose: true
               })
