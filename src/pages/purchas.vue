@@ -2,11 +2,11 @@
   <section class="panel">
     <h4 class="panel-title">自助下单</h4>
     <el-card>
-      <el-form ref="orderForm" :model="orderForm" :rules="rules" label-width="80px">
-        <el-form-item label="选择分类" prop="selectCategoryId">
+      <el-form ref="orderForm" :model="orderForm" label-width="80px">
+        <el-form-item label="选择分类" prop="selectCategoryId" :rules="rules.selectCategoryId">
           <el-cascader :options="options" :disabled="options.length === 0" @change="changeCategory" placeholder="请选择商品分类"></el-cascader>
         </el-form-item>
-        <el-form-item label="选择商品" prop="selectGood">
+        <el-form-item label="选择商品" prop="selectGood" :rules="rules.selectGood">
           <el-col v-loading.lock="goodsLoading">
             <el-select v-model="orderForm.selectGood" @change="changeGood" :disabled="goods.length === 0" value-key="id" placeholder="请选择商品">
               <el-option v-for="good in goods" :label="good.name | labelFilter" :value="good" :key="good.id"></el-option>
@@ -19,7 +19,7 @@
         <el-form-item label="商品描述">
           <el-input v-model="extra" disabled placeholder="商品描述"></el-input>
         </el-form-item>
-        <el-form-item v-for="(domain, index) in orderForm.domains" :label="domain.name" :prop="domain.name" :key="index">
+        <el-form-item v-for="(domain, index) in orderForm.domains" :label="domain.name" :prop="'domains.' + index + '.value'" :rules="rules[domain.name]" :key="index">
           <el-input v-model="domain.value" :placeholder="domain.hint"></el-input>
         </el-form-item>
         </el-form-item>
@@ -36,6 +36,7 @@ export default {
   data () {
     return {
       goodsLoading: false,
+      userInfo: undefined,
       orderForm: {
         selectCategoryId: 0,
         selectGood: undefined,
@@ -84,7 +85,7 @@ export default {
     },
     changeGood (good) {
       if (good) {
-        this.orderForm.domains = []
+        this.orderForm.domains.splice(0, this.orderForm.domains.length)
         let fields
         if (good.extraHint) {
           fields = JSON.parse(good.extraHint.replace(/\s/g, ''))
@@ -100,14 +101,41 @@ export default {
       }
     },
     submit (formName) {
+      // 提交订单前检差用户登录状态
+      if (!this.userInfo) {
+        this.$message({
+          message: '请登录',
+          type: 'warning',
+          showClose: true
+        })
+        return
+      }
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          // TODO 下单
+          // 格式化用户输入信息
+          let extra = ''
+          this.orderForm.domains.forEach(item => {
+            extra = `${extra},${item.name}:${item.value}`
+          })
+          extra = extra.replace(/^,/, '')
+          apiService.createInvoice(this.userInfo.id, this.orderForm.selectGood.id, extra)
+            .then(data => {
+              console.log('extra:', extra)
+              console.log('data:', data)
+            })
+            .catch(err => {
+              this.$message({
+                message: err.message,
+                type: 'error',
+                showClose: true
+              })
+            })
         }
       })
     }
   },
   async created () {
+    this.userInfo = apiService.getLocalUserInfo()
     const res = await apiService.getCategoryList()
     const cascaderOptions = res.map(categoryParent => {
       let options = {

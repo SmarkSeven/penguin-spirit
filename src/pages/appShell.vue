@@ -18,6 +18,7 @@
 </template>
 
 <script>
+import * as apiService from '../service/apiService'
 import Purchas from './purchas'
 import Invoice from './invoice'
 export default {
@@ -46,9 +47,9 @@ export default {
     }
   },
   created () {
-    setTimeout(() => {
-      this.signInStatus = false
-    }, 1500)
+    if (apiService.getLocalUserInfo()) {
+      this.signInStatus = true
+    }
   }
 }
 </script>
