@@ -157,6 +157,12 @@ export default {
         this.popoverText = '复制失败'
       })
     }
+  },
+  watch: {
+    invoiceProgressList () {
+      this.key = undefined
+      this.url = undefined
+    }
   }
 }
 </script>
@@ -200,6 +206,7 @@ export default {
   &.is-show {
     top: 0;
     opacity: 1;
+    z-index: 99;
   }
 }
 

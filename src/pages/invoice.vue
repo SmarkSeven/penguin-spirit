@@ -32,7 +32,7 @@
       @current-change="currentChange"
       :total="invoiceList.length">
     </el-pagination>
-    <invoice-info v-if="invoiceInfoVisible" :invoiceProgressList="currentInvoiceProgressList" @close="closeDialog" :class="{'is-show': invoiceInfoVisible}"></invoice-info>
+    <invoice-info v-if="show" :invoiceProgressList="currentInvoiceProgressList" @close="closeDialog" :class="{'is-show': invoiceInfoVisible}"></invoice-info>
   </div>
 </template>
 
@@ -46,6 +46,7 @@ export default {
   },
   data () {
     return {
+      show: false,
       userInfo: undefined,
       invoiceInfoVisible: false,
       currentPage: 1,
@@ -63,17 +64,24 @@ export default {
       this.currentPageData = this.invoiceList.slice(start, end)
     },
     clickItem (item) {
-      this.currentInvoiceInfo = undefined
       apiService.getInvoiceProcessList(item.id)
         .then(data => {
-          this.invoiceInfoVisible = true
-          this.currentInvoiceProgressList = data
           if (data.length === 0) {
             this.$message({
               message: '订单详情数据错误',
               type: 'error',
               showClose: true
             })
+          } else {
+            this.currentInvoiceProgressList = data
+            if (!this.show) {
+              this.show = true
+              setTimeout(() => {
+                this.invoiceInfoVisible = true
+              }, 200)
+            } else {
+              this.invoiceInfoVisible = true
+            }
           }
         })
         .catch(err => {
