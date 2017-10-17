@@ -32,7 +32,7 @@
       @current-change="currentChange"
       :total="invoiceList.length">
     </el-pagination>
-    <invoice-info v-if="currentInvoiceInfo" :invoiceInfo="currentInvoiceInfo" @close="closeDialog" :class="{'is-show': invoiceInfoVisible}"></invoice-info>
+    <invoice-info v-if="invoiceInfoVisible" :invoiceProgressList="currentInvoiceProgressList" @close="closeDialog" :class="{'is-show': invoiceInfoVisible}"></invoice-info>
   </div>
 </template>
 
@@ -52,9 +52,8 @@ export default {
       invoiceList: [],
       currentPageData: [],
       loadingInfo: false, // 加载订单详情
-      currentInvoiceInfo: undefined, // 当前订单详情
+      currentInvoiceProgressList: undefined, // 当前订单详情
       pageSize: 5 // 每页数据条数
-
     }
   },
   methods: {
@@ -64,13 +63,26 @@ export default {
       this.currentPageData = this.invoiceList.slice(start, end)
     },
     clickItem (item) {
-      apiService.getInvoiceInfo(item.id)
-        .then(reps => {
+      this.currentInvoiceInfo = undefined
+      apiService.getInvoiceProcessList(item.id)
+        .then(data => {
           this.invoiceInfoVisible = true
-          this.currentInvoiceInfo = reps.data[0]
+          this.currentInvoiceProgressList = data
+          if (data.length === 0) {
+            this.$message({
+              message: '订单详情数据错误',
+              type: 'error',
+              showClose: true
+            })
+          }
         })
         .catch(err => {
           Raven.captureException(err)
+          this.$message({
+            message: '获取订单信息失败',
+            type: 'error',
+            showClose: true
+          })
         })
     },
     closeDialog () {

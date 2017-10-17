@@ -55,18 +55,18 @@
               </el-steps>
             </el-col>
           </el-row>
-          <el-row type="flex" justify="start">
+          <el-row type="flex" justify="start" v-if="url">
             <div class="invoice-outline-label">下单地址:</div>
-            <div class="invoice-outline-value"><a :href="goodsInfo && goodsInfo.url" target="_blank" class="lnk">{{goodsInfo && goodsInfo.url}}</a></div>
+            <div class="invoice-outline-value"><a :href="url" target="_blank" class="lnk">{{url}}</a></div>
           </el-row>
-          <el-row type="flex" justify="start">
+          <el-row type="flex" justify="start" v-if="key">
             <div class="invoice-outline-label">卡&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;密:</div>
-            <div class="invoice-outline-value">{{goodsInfo && goodsInfo.key}}</div>
+            <div class="invoice-outline-value">{{key}}</div>
           </el-row>
-          <el-row type="flex" justify="start">
+          <el-row type="flex" justify="start" v-if="key">
             <el-popover ref="popover" placement="top-start" :title="popoverText" width="50" trigger="click">
             </el-popover>
-            <el-button :plain="true" size="mini" type="info" class="btn-copy" @click="copyKey" v-popover:popover :data-clipboard-text="goodsInfo && goodsInfo.key">复制卡密</el-button>
+            <el-button :plain="true" size="mini" type="info" class="btn-copy" @click="copyKey" v-popover:popover :data-clipboard-text="key">复制卡密</el-button>
           </el-row>
         </section>
       </el-card>
@@ -78,26 +78,28 @@
 import Clipboard from 'clipboard'
 export default {
   props: {
-    invoiceInfo: {
-      type: Object
+    invoiceProgressList: {
+      type: Array
     }
   },
   data () {
     return {
-      popoverText: '复制成功'
+      popoverText: '复制成功',
+      url: undefined,
+      key: undefined
     }
   },
   computed: {
     productOutline () {
-      const product = this.invoiceInfo.invoice.product
+      const product = this.invoiceProgressList[0].invoice.product
       return {
-        name: product.name.replace(/(<font color='red'>)|(<\/font>)/g, ''),
+        name: product.name.replace(/(<font color='\S+'>)|(<\/font>)/g, ''),
         extra: product.extra,
         price: `${product.price}积分`
       }
     },
     invoiceOutline () {
-      const invoice = this.invoiceInfo.invoice
+      const invoice = this.invoiceProgressList[0].invoice
       return {
         id: invoice.id,
         totalPrice: `${invoice.totalPrice}积分`,
@@ -105,41 +107,40 @@ export default {
       }
     },
     setps () {
-      let res = []
-      res.push({
-        label: '提交订单',
-        description: new Date(this.invoiceInfo.invoice.createAt).toLocaleString()
-      })
-      if (this.invoiceInfo.invoice.statusStr === '已退款') {
-        res.push({
-          label: '已退款',
-          description: new Date(this.invoiceInfo.invoice.createAt).toLocaleString()
-        })
-      } else if (this.invoiceInfo.invoice.statusStr === '已完成') {
-        res.push({
-          label: '订单完成',
-          description: new Date(this.invoiceInfo.invoice.createAt).toLocaleString()
-        })
-      } else {
-        res.push({
-          label: '正在处理'
-        })
-      }
-      return res
-    },
-    goodsInfo () {
-      if (this.invoiceInfo.invoice.statusStr === '已完成') {
-        const res1 = /http:\S+.php/.exec(this.invoiceInfo.extra)
-        const res2 = /(?:卡密：)\S+$/.exec(this.invoiceInfo.extra)
-        if (res2 !== null) {
-          res2[0] = res2[0].replace('卡密：', '')
-          return {
-            url: res1[0],
-            key: res2[0]
+      const invoice = this.invoiceProgressList[0].invoice
+      let list = [{label: '提交订单', description: new Date(invoice.createAt).toLocaleString()}]
+      this.invoiceProgressList.forEach(item => {
+        const extra = item.extra
+        if (extra.indexOf('卡密：') > -1) {
+          const res1 = /http:\S+.php/.exec(extra)
+          const res2 = /(?:卡密：)\S+$/.exec(extra)
+          if (res1) {
+            // 下单地址
+            this.url = res1[0]
           }
+          if (res2) {
+            // 卡密
+            this.key = res2[0].replace('卡密：', '')
+          }
+        } else {
+          list.push({
+            label: extra,
+            description: new Date(item.createAt).toLocaleString()
+          })
         }
+      })
+      if (invoice.statusStr === '已退款') {
+        list.push({
+          label: '已退款',
+          description: new Date(invoice.updateAt).toLocaleString()
+        })
+      } else if (invoice.statusStr === '已完成') {
+        list.push({
+          label: '订单完成',
+          description: new Date(invoice.updateAt).toLocaleString()
+        })
       }
-      return undefined
+      return list
     }
   },
   methods: {
