@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import Raven from 'raven-js'
 import * as apiService from '../service/apiService'
 export default {
   data () {
@@ -79,8 +80,7 @@ export default {
         })
         .catch(err => {
           this.goodsLoading = false
-          // TODO
-          console.log('fetch goods error:', err)
+          Raven.captureException(err)
         })
     },
     changeGood (good) {
@@ -119,9 +119,12 @@ export default {
           })
           extra = extra.replace(/^,/, '')
           apiService.createInvoice(this.userInfo.id, this.orderForm.selectGood.id, extra)
-            .then(data => {
-              console.log('extra:', extra)
-              console.log('data:', data)
+            .then(() => {
+              this.$message({
+                message: '您的订单已提交',
+                type: 'success',
+                showClose: true
+              })
             })
             .catch(err => {
               this.$message({
