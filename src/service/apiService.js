@@ -141,6 +141,15 @@ export async function createInvoice (userId, productId, extra) {
 }
 
 /**
+ * 积分cdk兑换
+ * @param {string} userId 用户id
+ * @param {string} cdkey cdkey码
+ */
+export async function exchangeCdkey (userId, cdkey) {
+  return await axios.post('/creditCdkey/exchange', {userId, cdkey})
+}
+
+/**
  * 从本地缓存获取用户信息
  * @export
  * @returns {any}
