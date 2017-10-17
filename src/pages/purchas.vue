@@ -59,7 +59,7 @@ export default {
   },
   filters: {
     labelFilter (label) {
-      const regex = /(<font color='red'>)|(<\/font>)/g
+      const regex = /(<font color='\S+'>)|(<\/font>)/g
       return label.replace(regex, '')
     }
   },
@@ -131,11 +131,20 @@ export default {
   display: inline;
   position: static;
 }
+.el-select-dropdown {
+  max-width: 94%;
+}
+
+.el-select-dropdown__item {
+  height: auto;
+  white-space: nowrap;
+  text-overflow: initial;
+  overflow: scroll;
+}
 </style>
 
 
 <style lang="scss" scoped>
-
 .panel {
   margin-bottom: 20px;
 }
