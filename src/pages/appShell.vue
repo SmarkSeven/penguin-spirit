@@ -18,7 +18,6 @@
 </template>
 
 <script>
-import * as apiService from '../service/apiService'
 import Purchas from './purchas'
 import Invoice from './invoice'
 export default {
@@ -47,10 +46,9 @@ export default {
     }
   },
   created () {
-    const user = apiService.getLocalUserInfo()
-    if (user) {
-      this.signInStatus = true
-    }
+    setTimeout(() => {
+      this.signInStatus = false
+    }, 1500)
   }
 }
 </script>

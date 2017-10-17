@@ -12,7 +12,7 @@
           </el-form-item>
           <el-form-item v-if="regMode" prop="code">
             <el-col :span="15">
-              <el-input v-model="loginForm.pass" type="number" placeholder="请输入验证码"></el-input>
+              <el-input v-model="loginForm.code" type="number" placeholder="请输入验证码"></el-input>
             </el-col>
             <el-col :span="8" :offset="1">
               <input  value="验证码" type="button" class="btn-code" @click="getCode('loginForm')">
