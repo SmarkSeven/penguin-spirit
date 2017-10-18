@@ -2,8 +2,8 @@
   <signIn :regMode="true"/>
 </template>
 
-<script>
-import SignIn from './signIn'
+<script lang="ts">
+import SignIn from './SignIn.vue'
 
 export default {
   components: {

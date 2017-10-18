@@ -1,8 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import SignIn from '@/pages/signIn'
-import Register from '@/pages/register'
-import AppShell from '@/pages/appShell'
+import SignIn from '@/pages/SignIn.vue'
+import Register from '@/pages/Register.vue'
+import AppShell from '../pages/AppShell.vue'
 
 Vue.use(Router)
 

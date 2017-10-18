@@ -17,35 +17,35 @@
   </el-row>
 </template>
 
-<script>
+<script lang='ts'>
+import Vue from 'vue'
+import Component from 'vue-class-component'
 import * as apiService from '../service/apiService'
-import Purchas from './purchas'
-import Invoice from './invoice'
-export default {
+import Purchas from './Purchas.vue'
+import Invoice from './Invoice.vue'
+import { Message } from 'element-ui'
+
+@Component({
   components: {
     Purchas,
     Invoice
-  },
-  data () {
-    return {
-      signInStatus: false
+  }
+})
+export default class AppShell extends Vue {
+  signInStatus: Boolean = false
+  tabClick () {
+    if (!this.signInStatus) {
+      Message.closeAll()
+      this.open()
     }
-  },
-  methods: {
-    tabClick () {
-      if (!this.signInStatus) {
-        this.$message.closeAll()
-        this.open()
-      }
-    },
-    open () {
-      this.$message({
-        message: '请登录',
-        type: 'warning',
-        showClose: true
-      })
-    }
-  },
+  }
+  open () {
+    Message({
+      message: '请登录',
+      type: 'warning',
+      showClose: true
+    })
+  }
   created () {
     if (apiService.getLocalUserInfo()) {
       this.signInStatus = true
@@ -80,7 +80,7 @@ export default {
   border-radius: 25px;
   opacity: 0;
   cursor: pointer;
-  box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04);
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .12), 0 0 6px 0 rgba(0, 0, 0, .04);
   transition: 1s;
 }
 
