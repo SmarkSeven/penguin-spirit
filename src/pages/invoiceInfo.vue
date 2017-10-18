@@ -57,7 +57,9 @@
           </el-row>
           <el-row type="flex" justify="start" v-if="url">
             <div class="invoice-outline-label">下单地址:</div>
-            <div class="invoice-outline-value"><a :href="url" target="_blank" class="lnk">{{url}}</a></div>
+            <div class="invoice-outline-value">
+              <a :href="url" target="_blank" class="lnk">{{url}}</a>
+            </div>
           </el-row>
           <el-row type="flex" justify="start" v-if="key">
             <div class="invoice-outline-label">卡&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;密:</div>
@@ -74,95 +76,94 @@
   </el-row>
 </template>
 
-<script>
+<script lang="ts">
+import { Component, Prop, Emit, Vue, Watch } from 'vue-property-decorator'
 import Clipboard from 'clipboard'
-export default {
-  props: {
-    invoiceProgressList: {
-      type: Array
-    }
-  },
-  data () {
+
+@Component
+export default class InvoiceInfo extends Vue {
+  @Prop()
+  invoiceProgressList: any[]
+  popoverText: string = '复制成功'
+  url: string = null
+  key: string = null
+  
+  get productOutline (): {name: string, extra: string, price: string} {
+    const product = this.invoiceProgressList[0].invoice.product
     return {
-      popoverText: '复制成功',
-      url: undefined,
-      key: undefined
+      name: product.name.replace(/(<font color='\S+'>)|(<\/font>)/g, ''),
+      extra: product.extra,
+      price: `${product.price}积分`
     }
-  },
-  computed: {
-    productOutline () {
-      const product = this.invoiceProgressList[0].invoice.product
-      return {
-        name: product.name.replace(/(<font color='\S+'>)|(<\/font>)/g, ''),
-        extra: product.extra,
-        price: `${product.price}积分`
-      }
-    },
-    invoiceOutline () {
-      const invoice = this.invoiceProgressList[0].invoice
-      return {
-        id: invoice.id,
-        totalPrice: `${invoice.totalPrice}积分`,
-        createAt: new Date(invoice.createAt).toLocaleString()
-      }
-    },
-    setps () {
-      const invoice = this.invoiceProgressList[0].invoice
-      let list = [{label: '提交订单', description: new Date(invoice.createAt).toLocaleString()}]
-      this.invoiceProgressList.forEach(item => {
-        const extra = item.extra
-        if (extra.indexOf('卡密：') > -1) {
-          const res1 = /http:\S+.php/.exec(extra)
-          const res2 = /(?:卡密：)\S+$/.exec(extra)
-          if (res1) {
-            // 下单地址
-            this.url = res1[0]
-          }
-          if (res2) {
-            // 卡密
-            this.key = res2[0].replace('卡密：', '')
-          }
-        } else {
-          list.push({
-            label: extra,
-            description: new Date(item.createAt).toLocaleString()
-          })
+  }
+
+  get invoiceOutline ():{id: number, totalPrice: string, createAt: string} {
+    const invoice = this.invoiceProgressList[0].invoice
+    return {
+      id: invoice.id,
+      totalPrice: `${invoice.totalPrice}积分`,
+      createAt: new Date(invoice.createAt).toLocaleString()
+    }
+  }
+
+  get setps (): any[] {
+    const invoice = this.invoiceProgressList[0].invoice
+    let list = [{ label: '提交订单', description: new Date(invoice.createAt).toLocaleString() }]
+    this.invoiceProgressList.forEach(item => {
+      const extra = item.extra
+      if (extra.indexOf('卡密：') > -1) {
+        const res1 = /http:\S+.php/.exec(extra)
+        const res2 = /(?:卡密：)\S+$/.exec(extra)
+        if (res1) {
+          // 下单地址
+          this.url = res1[0]
         }
-      })
-      if (invoice.statusStr === '已退款') {
+        if (res2) {
+          // 卡密
+          this.key = res2[0].replace('卡密：', '')
+        }
+      } else {
         list.push({
-          label: '已退款',
-          description: new Date(invoice.updateAt).toLocaleString()
-        })
-      } else if (invoice.statusStr === '已完成') {
-        list.push({
-          label: '订单完成',
-          description: new Date(invoice.updateAt).toLocaleString()
+          label: extra,
+          description: new Date(item.createAt).toLocaleString()
         })
       }
-      return list
-    }
-  },
-  methods: {
-    close () {
-      this.$emit('close')
-    },
-    copyKey () {
-      let clipboard = new Clipboard('.btn-copy')
-      clipboard.on('success', (e) => {
-        this.popoverText = '复制成功'
-        e.clearSelection()
+    })
+    if (invoice.statusStr === '已退款') {
+      list.push({
+        label: '已退款',
+        description: new Date(invoice.updateAt).toLocaleString()
       })
-      clipboard.on('error', (e) => {
-        this.popoverText = '复制失败'
+    } else if (invoice.statusStr === '已完成') {
+      list.push({
+        label: '订单完成',
+        description: new Date(invoice.updateAt).toLocaleString()
       })
     }
-  },
-  watch: {
-    invoiceProgressList () {
-      this.key = undefined
-      this.url = undefined
-    }
+    return list
+  }
+
+  @Emit('close')
+  close () {}
+
+  copyKey () {
+    let clipboard = new Clipboard('.btn-copy')
+    clipboard.on('success', (e) => {
+      this.popoverText = '复制成功'
+      e.clearSelection()
+    })
+    clipboard.on('error', (e) => {
+      this.popoverText = '复制失败'
+    })
+  }
+
+  @Watch('invoiceProgressList')
+  onInvoiceProgressListChanged () {
+    this.key = null
+    this.url = null
+  }
+  created () {
+    console.log('data:', this.invoiceProgressList)
   }
 }
 </script>
@@ -178,18 +179,18 @@ export default {
 }
 
 .invoice-info-content .el-card__body {
-   padding: 0;
- }
+  padding: 0;
+}
 
 .el-step__title.is-success {
-   color: #48576a;
- }
+  color: #48576a;
+}
 
 .el-step__head.is-text.is-success {
   color: #fff;
   background-color: #bfcbd9;
   border-color: #bfcbd9;
- }
+}
 </style>
 
 <style lang="scss" scoped>
@@ -251,11 +252,13 @@ export default {
   background-color: #EFF2F7;
 }
 
-.good-outline, .invoice-outline {
+.good-outline,
+.invoice-outline {
   padding-bottom: 14px;
 }
 
-.good-outline-label, .invoice-outline-label {
+.good-outline-label,
+.invoice-outline-label {
   padding-right: 6px;
   margin-bottom: 4px;
   width: 70px;
@@ -264,7 +267,8 @@ export default {
   font-weight: 500;
 }
 
-.good-outline-value, .invoice-outline-value {
+.good-outline-value,
+.invoice-outline-value {
   flex: 1;
   margin-bottom: 4px;
   padding-right: 12px;
@@ -273,8 +277,8 @@ export default {
   line-height: 22px;
   color: #99A9BF;
   text-align: left;
-  word-wrap:break-word;
-  word-break:break-all;
+  word-wrap: break-word;
+  word-break: break-all;
 }
 
 .progress-wrapper {
@@ -294,10 +298,18 @@ export default {
 }
 
 a.lnk {
-  &:link {color: #324057}
-  &:visited {color: #20A0FF}
-  &:hover {color: #58B7FF}
-  &:active {color: #13CE66}
+  &:link {
+    color: #324057
+  }
+  &:visited {
+    color: #20A0FF
+  }
+  &:hover {
+    color: #58B7FF
+  }
+  &:active {
+    color: #13CE66
+  }
 }
 
 .btn-copy {
