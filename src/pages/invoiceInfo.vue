@@ -162,9 +162,6 @@ export default class InvoiceInfo extends Vue {
     this.key = null
     this.url = null
   }
-  created () {
-    console.log('data:', this.invoiceProgressList)
-  }
 }
 </script>
 

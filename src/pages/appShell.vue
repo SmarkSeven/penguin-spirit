@@ -33,12 +33,14 @@ import { Message } from 'element-ui'
 })
 export default class AppShell extends Vue {
   signInStatus: Boolean = false
+  
   tabClick () {
     if (!this.signInStatus) {
       Message.closeAll()
       this.open()
     }
   }
+
   open () {
     Message({
       message: '请登录',
@@ -46,6 +48,7 @@ export default class AppShell extends Vue {
       showClose: true
     })
   }
+
   created () {
     if (apiService.getLocalUserInfo()) {
       this.signInStatus = true
