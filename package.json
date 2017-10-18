@@ -10,15 +10,16 @@
     "build": "node build/build.js",
     "unit": "cross-env BABEL_ENV=test karma start test/unit/karma.conf.js --single-run",
     "e2e": "node test/e2e/runner.js",
-    "test": "npm run unit && npm run e2e",
-    "lint": "eslint --ext .js,.vue src test/unit/specs test/e2e/specs"
+    "test": "npm run unit && npm run e2e"
   },
   "dependencies": {
     "axios": "^0.16.2",
     "clipboard": "^1.7.1",
+    "element-theme-chalk": "^2.0.0-alpha.1",
     "element-ui": "^1.4.6",
     "raven-js": "^3.18.1",
     "vue": "^2.5.2",
+    "vue-property-decorator": "^6.0.0",
     "vue-router": "^3.0.1"
   },
   "devDependencies": {
@@ -80,7 +81,10 @@
     "shelljs": "^0.7.8",
     "sinon": "^4.0.0",
     "sinon-chai": "^2.8.0",
+    "ts-loader": "^3.0.2",
+    "typescript": "^2.5.3",
     "url-loader": "^0.5.8",
+    "vue-class-component": "^6.0.0",
     "vue-loader": "^13.3.0",
     "vue-style-loader": "^3.0.1",
     "vue-template-compiler": "^2.5.2",
