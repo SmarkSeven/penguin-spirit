@@ -15,14 +15,14 @@
                 <el-input v-model="loginForm.code" type="number" placeholder="请输入验证码"></el-input>
               </el-col>
               <el-col :span="8" :offset="1">
-                <input value="验证码" type="button" class="btn-code" @click="getCode('loginForm')">
+                <input :value="codeBtnAvailable ? '验证码' : codeBtnLabel + ' S'" type="button" class="btn-code" @click="getCode('loginForm')" :disabled="!codeBtnAvailable">
               </el-col>
             </el-form-item>
             <el-form-item v-if="regMode">
               <el-input v-model="loginForm.inviteCode" placeholder="邀请码(非必填)"></el-input>
             </el-form-item>
             <el-form-item>
-              <div class="btn-box">
+              <div class="btn-box" v-loading="regLoading">
                 <input v-if="!regMode" value="登录" type="button" class="btn-submit" @click="signIn('loginForm')">
                 <input value="注册" type="button" class="lnk-register" :class="{'btn-register': regMode}" @click="register('loginForm')">
               </div>
@@ -41,15 +41,15 @@ import * as apiService from '../service/apiService'
 const pattern = /^((1[3,5,8][0-9])|(14[5,7])|(17[0,6,7,8])|(19[7]))\d{8}$/
 const checkPhone = (rule, value, callback) => {
   if (!pattern.test(value)) {
-    callback(new Error())
+    callback(new Error('请输正确的手机号'))
   } else {
     callback()
   }
 }
 const checkCode = (rule, code, callback) => {
-  const pattern = /^\d{8}$/
+  const pattern = /^\d{6}$/
   if (!pattern.test(code)) {
-    callback(new Error())
+    callback(new Error('请输正确的手机号'))
   } else {
     callback()
   }
@@ -58,6 +58,9 @@ const checkCode = (rule, code, callback) => {
 export default {
   data () {
     return this.regMode ? {
+      regLoading: false,  // show注册loading
+      codeBtnAvailable: true, // 验证码按钮状态
+      codeBtnLabel: 60, // 验证码按钮不可用时显示的文字
       loginForm: {
         phone: '',
         pass: '',
@@ -65,9 +68,9 @@ export default {
         inviteCode: ''
       },
       rules: {
-        phone: [{ validator: checkPhone, message: '请输正确的手机号', trigger: 'blur' }],
-        pass: [{ required: true, message: '请输入密码', trigger: 'blur' }],
-        code: [{ validator: checkCode, message: '请输验证码', trigger: 'blur' }]
+        phone: [{ validator: checkPhone, trigger: 'blur' }, { validator: checkPhone }],
+        pass: [{ required: true, message: '请输入密码' }],
+        code: [{ validator: checkCode }]
       }
     }
       : {
@@ -76,7 +79,7 @@ export default {
           pass: ''
         },
         rules: {
-          phone: [{ validator: checkPhone, message: '请输正确的手机号', trigger: 'blur' }],
+          phone: [{ validator: checkPhone, trigger: 'blur' }],
           pass: [{ required: true, message: '请输入密码', trigger: 'blur' }]
         }
       }
@@ -88,6 +91,19 @@ export default {
     }
   },
   methods: {
+    timer () {
+      const timer = () => {
+        if (this.codeBtnLabel === 0) {
+          clearInterval(t)
+          this.codeBtnLabel = 60
+          this.codeBtnAvailable = true
+          return 
+        }
+        this.codeBtnLabel--
+        console.log(this.codeBtnLabel)
+      }
+      let t = setInterval(timer, 1000)
+    },
     checkLocalStorageSupported () {
       try {
         localStorage.setItem('test', 'test')
@@ -98,14 +114,38 @@ export default {
         return false
       }
     },
-    checkCode (code) {
-      const pattern = /^\d{8}$/
-      return pattern.test(code)
+    signInOrRegSuccessHandle (response) {
+      let { id, phone, inviteCode, nickName } = response
+      if (this.checkLocalStorageSupported()) {
+        localStorage.setItem('QEJL/WEBAPP/CURRENTUSER', JSON.stringify({ id, phone, inviteCode, nickName }))
+      }
+      this.$router.replace({ path: '/' })
+    },
+    httpFailedHandle (err) {
+      Raven.captureException(err)
+      this.$message({
+        message: err.message,
+        type: 'error',
+        showClose: true
+      })
     },
     getCode (formName) {
-      this.$refs[formName].validateField('phone', (valid) => {
-        if (valid) {
-          // TODO login
+      this.$refs[formName].validateField('phone', (errorMessage) => {
+        if (!errorMessage) {
+          this.codeBtnAvailable = false
+          apiService.getSmsCode(this.loginForm.phone, 1)
+            .then(() => {
+              this.$message({
+                message: '验证码已发送',
+                type: 'success',
+                showClose: true
+              })
+              this.timer()
+            })
+            .catch(err => {
+              this.codeBtnAvailable = true
+              this.httpFailedHandle(err)
+              })
         } else {
           return false
         }
@@ -115,21 +155,8 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           apiService.signIn(this.loginForm.phone, this.loginForm.pass)
-            .then(response => {
-              let { id, phone, inviteCode, nickName } = response
-              if (this.checkLocalStorageSupported()) {
-                localStorage.setItem('QEJL/WEBAPP/CURRENTUSER', JSON.stringify({ id, phone, inviteCode, nickName }))
-              }
-              this.$router.replace({ path: '/' })
-            })
-            .catch(err => {
-              Raven.captureException(err)
-              this.$message({
-                message: err.message,
-                type: 'warning',
-                showClose: true
-              })
-            })
+            .then(response => {this.signInOrRegSuccessHandle(response)})
+            .catch(err => this.httpFailedHandle(err))
         }
       })
     },
@@ -143,9 +170,16 @@ export default {
       }
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          // TODO register
+          this.regLoading = true
+          apiService.register(this.loginForm.phone, this.loginForm.pass, '1234nnafna', '1245', this.loginForm.code, this.loginForm.inviteCode)
+            .then(response => {this.signInOrRegSuccessHandle(response)})
+            .then(() => this.regLoading = false)
+            .catch(err => {
+              this.httpFailedHandle(err)
+              this.regLoading = false
+              })
+            
         } else {
-          console.log('error submit!!')
           return false
         }
       })
@@ -154,7 +188,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 .wrapper {
   border-top-width: 1px;
   padding-top: 20vh;
@@ -168,6 +202,7 @@ export default {
 .btn-submit,
 .lnk-register,
 .btn-code {
+  position: relative;
   width: 49%;
   height: 34px;
   font-size: 12px;
@@ -176,6 +211,11 @@ export default {
   cursor: pointer;
   background: #30A080;
   color: #FFF;
+  transition: 3;
+}
+
+.btn-code[disabled] {
+  background: #228888;
 }
 
 .btn-code {

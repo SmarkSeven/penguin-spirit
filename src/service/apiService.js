@@ -29,10 +29,6 @@ axios.interceptors.request.use(
 )
 
 axios.interceptors.response.use(response => {
-  // 特殊处理注册的返回值
-  if (response.config.url === `${response.config.baseURL}/user/register`) {
-    return response.data
-  }
   if (response.data.code !== 0) {
     throw new Error(response.data.msg)
   }
