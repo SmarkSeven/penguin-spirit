@@ -159,8 +159,8 @@ export default {
 <style>
 .el-cascader,
 .el-select {
-  display: block;
-  position: static;
+  display: block !important;
+  /* position: static; */
 }
 .el-select-dropdown {
   max-width: 94%;
