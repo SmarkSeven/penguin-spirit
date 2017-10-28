@@ -159,7 +159,7 @@ export default {
 <style>
 .el-cascader,
 .el-select {
-  display: inline;
+  display: block;
   position: static;
 }
 .el-select-dropdown {
